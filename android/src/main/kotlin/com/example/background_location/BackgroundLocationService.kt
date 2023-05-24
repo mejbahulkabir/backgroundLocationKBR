@@ -79,7 +79,7 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
         receiver = MyReceiver()
 
         LocalBroadcastManager.getInstance(context).registerReceiver(receiver!!,
-                IntentFilter(LocationUpdatesService.ACTION_BROADCAST))
+            IntentFilter(LocationUpdatesService.ACTION_BROADCAST))
     }
 
     fun onDetachedFromEngine() {
@@ -104,7 +104,7 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
 
     private fun startLocationService(distanceFilter: Double?, forceLocationManager : Boolean?): Int{
         LocalBroadcastManager.getInstance(context!!).registerReceiver(receiver!!,
-                IntentFilter(LocationUpdatesService.ACTION_BROADCAST))
+            IntentFilter(LocationUpdatesService.ACTION_BROADCAST))
         if (!bound) {
             val intent = Intent(context, LocationUpdatesService::class.java)
             intent.putExtra("distance_filter", distanceFilter)
@@ -190,13 +190,13 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
         val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.ACCESS_FINE_LOCATION)
         if (shouldProvideRationale) {
             Log.i(BackgroundLocationPlugin.TAG, "Displaying permission rationale to provide additional context.")
-           // Toast.makeText(context, R.string.permission_rationale, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, " ", Toast.LENGTH_LONG).show()
 
         } else {
             Log.i(BackgroundLocationPlugin.TAG, "Requesting permission")
             ActivityCompat.requestPermissions(activity!!,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    REQUEST_PERMISSIONS_REQUEST_CODE)
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_PERMISSIONS_REQUEST_CODE)
         }
     }
 
@@ -226,9 +226,9 @@ class BackgroundLocationService: MethodChannel.MethodCallHandler, PluginRegistry
         Log.i(BackgroundLocationPlugin.TAG, "onRequestPermissionResult")
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             when {
-                grantResults.isEmpty() -> Log.i(BackgroundLocationPlugin.TAG, "User interaction was cancelled.")
+                grantResults!!.isEmpty() -> Log.i(BackgroundLocationPlugin.TAG, "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> service?.requestLocationUpdates()
-                else -> Toast.makeText(context, " ", Toast.LENGTH_LONG).show()
+                else -> Toast.makeText(context, "", Toast.LENGTH_LONG).show()
             }
         }
         return true

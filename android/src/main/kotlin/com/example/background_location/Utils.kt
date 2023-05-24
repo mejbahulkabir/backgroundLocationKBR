@@ -4,6 +4,7 @@ package com.example.background_location
 import android.content.Context
 import com.example.background_location.BackgroundLocationPlugin
 
+
 internal object Utils {
 
     private const val KEY_REQUESTING_LOCATION_UPDATES = "requesting_location_updates"
@@ -17,9 +18,9 @@ internal object Utils {
 
     fun setRequestingLocationUpdates(context: Context, requestingLocationUpdates: Boolean) {
         context.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
-                .edit()
-                .putBoolean(KEY_REQUESTING_LOCATION_UPDATES, requestingLocationUpdates)
-                .apply()
+            .edit()
+            .putBoolean(KEY_REQUESTING_LOCATION_UPDATES, requestingLocationUpdates)
+            .apply()
     }
 
 }

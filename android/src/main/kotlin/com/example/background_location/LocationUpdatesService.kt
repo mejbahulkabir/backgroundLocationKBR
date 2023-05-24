@@ -79,14 +79,14 @@ class LocationUpdatesService : Service() {
 
 
             val builder = NotificationCompat.Builder(this, "BackgroundLocation")
-                    .setContentTitle(NOTIFICATION_TITLE)
-                    .setOngoing(true)
-                    .setSound(null)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setSmallIcon(resources.getIdentifier(NOTIFICATION_ICON, "mipmap", packageName))
-                    .setWhen(System.currentTimeMillis())
-                    .setStyle(NotificationCompat.BigTextStyle().bigText(NOTIFICATION_MESSAGE))
-                    .setContentIntent(pendingIntent)
+                .setContentTitle(NOTIFICATION_TITLE)
+                .setOngoing(true)
+                .setSound(null)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSmallIcon(resources.getIdentifier(NOTIFICATION_ICON, "mipmap", packageName))
+                .setWhen(System.currentTimeMillis())
+                .setStyle(NotificationCompat.BigTextStyle().bigText(NOTIFICATION_MESSAGE))
+                .setContentIntent(pendingIntent)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder.setChannelId(CHANNEL_ID)
@@ -100,17 +100,22 @@ class LocationUpdatesService : Service() {
     override fun onCreate() {
         val googleAPIAvailability = GoogleApiAvailability.getInstance()
             .isGooglePlayServicesAvailable(applicationContext)
-        
+
         isGoogleApiAvailable = googleAPIAvailability == ConnectionResult.SUCCESS
-        
+
 
         if (isGoogleApiAvailable && !this.forceLocationManager) {
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-            
+
             mFusedLocationCallback = object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult?) {
-                    super.onLocationResult(locationResult)
-                    onNewLocation(locationResult!!.lastLocation)
+                override fun onLocationResult(locationResult: LocationResult) {
+                    // Smart cast to 'Location' is impossible, because 'locationResult.lastLocation'
+                    // is a property that has open or custom getter
+                    val newLastLocation = locationResult.lastLocation
+                    if (newLastLocation is Location) {
+                        super.onLocationResult(locationResult)
+                        onNewLocation(newLastLocation)
+                    }
                 }
             }
         } else {
@@ -156,7 +161,7 @@ class LocationUpdatesService : Service() {
         Utils.setRequestingLocationUpdates(this, true)
         try {
             if (isGoogleApiAvailable && !this.forceLocationManager) {
-                mFusedLocationClient!!.requestLocationUpdates(mLocationRequest,
+                mFusedLocationClient!!.requestLocationUpdates(mLocationRequest!!,
                     mFusedLocationCallback!!, Looper.myLooper())
             } else {
                 mLocationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, mLocationManagerCallback!!)
@@ -186,11 +191,11 @@ class LocationUpdatesService : Service() {
         try {
             if(isGoogleApiAvailable && !this.forceLocationManager) {
                 mFusedLocationClient!!.lastLocation
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful && task.result != null) {
-                                mLocation = task.result
-                            }
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful && task.result != null) {
+                            mLocation = task.result
                         }
+                    }
             } else {
                 mLocation = mLocationManager!!.getLastKnownLocation(LocationManager.GPS_PROVIDER)
             }
